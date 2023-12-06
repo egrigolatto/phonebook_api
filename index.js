@@ -31,7 +31,11 @@ app.use(morgan((tokens, req, res) => {
 app.use(express.json());
 // app.use(requestLogger);
 // app.use(morgan('tiny'));
-app.use(cors())
+app.use(cors());
+
+app.use(express.static('dist'))
+
+
 let persons = [
   {
     name: "Arto Hellas",
@@ -56,7 +60,7 @@ let persons = [
 ]
 
 app.get('/', (request, response) => {
-  response.send('<h1>Hola mundo cruel!</h1>')
+  response.send('<h1>Hola mundo!</h1>')
 })
 
 app.get('/api/persons', (request, response) => {
@@ -149,7 +153,7 @@ app.get('/api/info', (request, response) => {
 // para capturar solicitudes realizadas a rutas inexistentes
 app.use(unknownEndpoint)
 
-const PORT = process.env.PORT || 3001;
+const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`el puerto se esta ejecutando en http://localhost:${PORT}`)
 })
