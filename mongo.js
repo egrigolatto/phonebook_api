@@ -17,7 +17,7 @@ const personSchema = new mongoose.Schema({
   number: String,
 })
 
- const Person = mongoose.model('Person', personSchema)
+const Person = mongoose.model('Person', personSchema)
 
 const person = new Person({
   name: process.argv[3],

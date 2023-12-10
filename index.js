@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
-const morgan = require('morgan');
+const morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/persons')
 
@@ -38,14 +38,14 @@ app.use(morgan((tokens, req, res) => {
     tokens.res(req, res, 'content-length'), '-',
     tokens['response-time'](req, res), 'ms',
     JSON.stringify(req.body), // Muestra el cuerpo de la solicitud
-  ].join(' ');
-}));
+  ].join(' ')
+}))
 
 app.use(express.static('dist'))
-app.use(express.json());
+app.use(express.json())
 // app.use(requestLogger);
 // app.use(morgan('tiny'));
-app.use(cors());
+app.use(cors())
 
 
 
@@ -184,31 +184,31 @@ app.delete('/api/persons/:id', (request, response, next) => {
 // })
 
 app.post('/api/persons', (request, response, next) => {
-  const body = request.body;
+  const body = request.body
 
   // Verificar si ya existe una persona con el mismo nombre
   Person.findOne({ name: body.name })
     .then(existingPerson => {
       if (existingPerson) {
-        const errorMessage = 'El nombre ya está en uso. Por favor, elige otro nombre.';
-        return response.status(400).json({ error: errorMessage });
+        const errorMessage = 'El nombre ya está en uso. Por favor, elige otro nombre.'
+        return response.status(400).json({ error: errorMessage })
       }
 
       // Si no hay una persona con el mismo nombre, proceder con la creación
       const person = new Person({
         name: body.name,
         number: body.number,
-      });
+      })
 
-      return person.save();
+      return person.save()
     })
     .then(savedPerson => {
-      response.json(savedPerson.toJSON());
+      response.json(savedPerson.toJSON())
     })
     .catch(error => {
-      next(error);
-    });
-});
+      next(error)
+    })
+})
 
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -229,17 +229,17 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.get('/api/info', (request, response) => {
   // Obtener la fecha y hora actual
-  const fechaHoraActual = new Date();
+  const fechaHoraActual = new Date()
  
 
   // Formatear la fecha y hora según el formato deseado
-  const formatoFechaHora = fechaHoraActual.toDateString() + ' ' + fechaHoraActual.toLocaleTimeString();
+  const formatoFechaHora = fechaHoraActual.toDateString() + ' ' + fechaHoraActual.toLocaleTimeString()
 
   // Crear el texto de respuesta
-  const respuestaTexto = `Phonebook has info for 2 people <br><br> ${formatoFechaHora}`;
+  const respuestaTexto = `Phonebook has info for 2 people <br><br> ${formatoFechaHora}`
 
   // Enviar la respuesta
-  response.send(respuestaTexto);
+  response.send(respuestaTexto)
 })
 
 
@@ -247,7 +247,7 @@ app.get('/api/info', (request, response) => {
 app.use(unknownEndpoint)
 app.use(errorHandler)
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`el puerto se esta ejecutando en http://localhost:${PORT}`)
 })
