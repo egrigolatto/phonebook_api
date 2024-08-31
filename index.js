@@ -1,9 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
-
-
+const Person = require("./models/persons");
 
 const requestLogger = (request, response, next) => {
   console.log("Method:", request.method);
@@ -36,7 +36,6 @@ app.use(
 );
 
 app.use(express.static("dist"));
-
 
 let persons = [
   {
@@ -80,18 +79,30 @@ app.get("/info", (request, response) => {
   response.send(respuestaTexto);
 });
 
+// app.get("/api/persons", (request, response) => {
+//   response.json(persons);
+// });
+
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then((persons) => {
+    response.json(persons);
+  });
 });
 
+// app.get("/api/persons/:id", (request, response) => {
+//   const id = Number(request.params.id);
+//   const person = persons.find((person) => person.id === id);
+//   if (person) {
+//     response.json(person);
+//   } else {
+//     response.status(404).end();
+//   }
+// });
+
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((person) => person.id === id);
-  if (person) {
+  Person.findById(request.params.id).then((person) => {
     response.json(person);
-  } else {
-    response.status(404).end();
-  }
+  });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -106,32 +117,49 @@ const generateId = () => {
   return maxId + 1;
 };
 
+// app.post("/api/persons", (request, response) => {
+//   const body = request.body;
+
+//   if (!body.name || !body.number) {
+//     return response.status(400).json({
+//       error: "content missing",
+//     });
+//   }
+
+//   const existingPerson = persons.find((person) => person.name === body.name);
+
+//   if (existingPerson) {
+//     return response.status(400).json({
+//       error: "name must be unique",
+//     });
+//   }
+
+//   const person = {
+//     name: body.name,
+//     number: body.number || "unknown",
+//     id: generateId(),
+//   };
+
+//   persons = persons.concat(person);
+
+//   response.json(person);
+// });
+
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: "content missing",
-    });
+  if (body.name === undefined) {
+    return response.status(400).json({ error: "content missing" });
   }
 
-  const existingPerson = persons.find((person) => person.name === body.name);
-
-  if (existingPerson) {
-    return response.status(400).json({
-      error: "name must be unique",
-    });
-  }
-
-  const person = {
+  const person = new Person({
     name: body.name,
-    number: body.number || "unknown",
-    id: generateId(),
-  };
+    number: body.number || "unknown"
+  });
 
-  persons = persons.concat(person);
-
-  response.json(person);
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
 });
 
 app.use(unknownEndpoint);
